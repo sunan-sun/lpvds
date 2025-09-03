@@ -2,7 +2,7 @@ import os, sys, json, time
 import numpy as np
 
 """ uncomment the imports below if using DAMM; otherwise import your own methods """
-from .damm.main_damm import DAMM as damm_class
+from .damm.src.damm_class import DAMM as damm_class
 from .dsopt.dsopt_class import dsopt_class
 
 
@@ -10,7 +10,6 @@ from .dsopt.dsopt_class import dsopt_class
 def _write_json(data, path):
     with open(path, "w") as json_file:
         json.dump(data, json_file, indent=4)
-
 
 
 
