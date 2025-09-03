@@ -28,16 +28,16 @@ def plot_gmm(x_train, label, damm):
         ax.scatter(x_train[:, 0], x_train[:, 1], color=color_mapping[:], alpha=0.4, label="Demonstration")
 
 
-        est_K = damm.K
-        Priors =damm.Prior
-        Mu = damm.Mu.T
-        Sigma = damm.Sigma
+        # est_K = damm.K
+        # Priors =damm.prior
+        # Mu = damm.mu.T
+        # Sigma = damm.sigma
 
-        from gmr import GMM, plot_error_ellipses
-        gmm = GMM(est_K, Priors, Mu.T, Sigma)
-        plot_error_ellipses(ax, gmm, alpha=0.1, colors=colors)
-        for num in np.arange(0, len(Mu[0])):
-            plt.text(Mu[0][num], Mu[1][num], str(num+1), fontsize=20)
+        # from gmr import GMM, plot_error_ellipses
+        # gmm = GMM(est_K, Priors, Mu.T, Sigma)
+        # plot_error_ellipses(ax, gmm, alpha=0.1, colors=colors)
+        # for num in np.arange(0, len(Mu[0])):
+        #     plt.text(Mu[0][num], Mu[1][num], str(num+1), fontsize=20)
 
 
 
@@ -90,7 +90,7 @@ def plot_ds_2d(x_train, x_test_list, lpvds, *args):
     plot_sample = 50
     x_mesh,y_mesh = np.meshgrid(np.linspace(x_min,x_max,plot_sample),np.linspace(y_min,y_max,plot_sample))
     X = np.vstack([x_mesh.ravel(), y_mesh.ravel()])
-    gamma = lpvds.damm.logProb(X.T)
+    gamma = lpvds.damm.compute_gamma(X.T)
     for k in np.arange(len(A)):
         if k == 0:
             dx = gamma[k].reshape(1, -1) * (A[k] @ (X - att.T))  # gamma[k].reshape(1, -1): [1, num] dim x num

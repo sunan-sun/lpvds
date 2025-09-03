@@ -2,7 +2,7 @@ import os, sys, json, time
 import numpy as np
 
 """ uncomment the imports below if using DAMM; otherwise import your own methods """
-from .damm.damm_class import damm_class
+from .damm.main_damm import DAMM as damm_class
 from .dsopt.dsopt_class import dsopt_class
 
 
@@ -38,18 +38,19 @@ class lpvds_class():
             "sigma_dir_0":    0.001,
             "min_thold":      0
         }
+        x, x_dir = damm_class.pre_process(x, x_dot)
         
-        self.damm  = damm_class(self.x, self.x_dot, self.param)
+        self.damm  = damm_class(x, x_dir, nu_0=5, kappa_0=1, psi_dir_0=1)
 
 
 
     def _cluster(self):
-        self.gamma = self.damm.begin()
+        self.gamma = self.damm.fit()
 
         # self.assignment_arr = np.argmax(self.gamma, axis=0) # this would result in some component being empty
         # self.K     = self.gamma.shape[0] 
 
-        self.assignment_arr = self.damm.assignment_arr
+        self.assignment_arr = self.damm.z
         self.K = int(self.damm.K)
 
     def _optimize(self):
@@ -77,7 +78,7 @@ class lpvds_class():
     def _step(self, x, dt):
         x_dot     = np.zeros((x.shape[1], 1))
 
-        gamma = self.damm.logProb(x) 
+        gamma = self.damm.compute_gamma(x) 
         for k in range(self.K):
             x_dot  += gamma[k, 0] * self.A[k] @ (x - self.x_att).T
         x_next = x + x_dot.T * dt
