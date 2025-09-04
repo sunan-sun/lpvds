@@ -1,0 +1,9 @@
+repositories:
+  damm:
+    type: git
+    url: https://github.com/SunannnSun/damm.git
+    path: damm
+  dsopt:
+    type: git
+    url: https://github.com/SunannnSun/dsopt.git
+    path: dsopt
