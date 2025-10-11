@@ -1,0 +1,7 @@
+repositories:
+  src/damm:
+    type: git
+    url: https://github.com/SunannnSun/damm.git
+  src/dsopt:
+    type: git
+    url: https://github.com/SunannnSun/dsopt.git
