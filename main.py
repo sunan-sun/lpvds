@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.util import load_tools, plot_tools
+from src.util import load_tools
 from src.lpvds_class import lpvds_class
 
+from src.damm.src.util.plot_tools import plot_gmm
+from src.util.plot_tools import plot_ds
 
 
 if __name__ == "__main__":
@@ -30,9 +32,6 @@ if __name__ == "__main__":
 
 
     # plot results
-    plot_tools.plot_gmm(x, lpvds.assignment_arr, lpvds.damm)
-    if x.shape[1] == 2:
-        plot_tools.plot_ds_2d(x, x_test_list, lpvds)
-    else:
-        plot_tools.plot_ds_3d(x, x_test_list)
+    plot_gmm(x, lpvds.assignment_arr, lpvds.damm)
+    plot_ds(x, x_test_list, lpvds)
     plt.show()
