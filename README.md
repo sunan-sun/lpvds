@@ -5,8 +5,8 @@ Boilerplate code for LPV-DS framework [1]. By default, one can pull the followin
 
 
 <p align="center">
-  <img src="imgs/image6.gif" height="250" style="vertical-align:middle;">
-  <img src="imgs/image21.gif"  height="250" style="vertical-align:middle;">
+  <img src="imgs/image6.gif" height="300" style="vertical-align:middle;">
+  <img src="imgs/image21.gif"  height="300" style="vertical-align:middle;">
 </p>
 
 
