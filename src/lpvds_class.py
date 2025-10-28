@@ -103,7 +103,7 @@ class lpvds_class():
 
             i += 1
 
-        return np.vstack(x_test)
+        return np.vstack(x_test), np.array(gamma_test)
 
 
 

@@ -57,8 +57,6 @@ def plot_ds_2d(x_train, x_test_list, lpvds, *args):
         ax.set_title(args[0])
 
 
-
-
 def plot_ds_3d(x_train, x_test_list):
     N = x_train.shape[1]
 
@@ -84,43 +82,33 @@ def plot_ds_3d(x_train, x_test_list):
 
 
 
+def plot_gamma(gamma_arr, **argv):
+
+    M, K = gamma_arr.shape
 
 
-"""legacy"""
-# def plot_incremental_ds(new_data, prev_data, att, x_test_list):
+    colors = ["r", "g", "b", "k", 'c', 'm', 'y', 'crimson', 'lime'] + [
+    "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(200)]
 
-#     fig = plt.figure(figsize=(16, 10))
-#     ax = fig.add_subplot(projection='3d')
+    if K == 1:
+        fig, ax = plt.subplots(1, 1, figsize=(12, 8))
 
-#     ax.scatter(prev_data[::4, 0], prev_data[::4, 1], prev_data[::4, 2], color='r', s=10,  label='original data')
-#     ax.scatter(new_data[::4, 0], new_data[::4, 1], new_data[::4, 2], color = 'magenta', s=10,  label='new data')
+        ax.scatter(np.arange(M), gamma_arr[0, :], s=5, color=colors[0])
+        ax.set_ylim([0, 1])
+        if "title" in argv:
+            ax.set_title(argv["title"])
+        else:
+            ax.set_title(r"$\gamma(\cdot)$ over Time")
+    else:
+        fig, axs = plt.subplots(K, 1, figsize=(12, 8))
 
-#     ax.scatter(att[0, 0], att[0, 1], att[0, 2], marker=(8, 2, 0), s=150, c='k', label='Target')
+        for k in range(K):
+            axs[k].scatter(np.arange(M), gamma_arr[:, k], s=5, color=colors[k])
+            axs[k].set_ylim([0, 1])
+        
+        if "title" in argv:
+            axs[0].set_title(argv["title"])
+        else:
+            axs[0].set_title(r"$\gamma(\cdot)$ over Time")
 
-#     new_label = mlines.Line2D([], [], color='red',
-#                         linewidth=3, label='Old Demo')
-#     old_label = mlines.Line2D([], [], color='magenta',
-#                         linewidth=3, label='New Demo')
-#     ax.legend(handles=[new_label, old_label])
 
-#     L = len(x_test_list)
-#     for l in range(L):
-#         x_test = x_test_list[l]
-#         if l != L - 1:
-#             ax.plot3D(x_test[:, 0], x_test[:, 1], x_test[:, 2], 'k', linewidth=3.5)
-#         else:
-#             ax.plot3D(x_test[:, 0], x_test[:, 1], x_test[:, 2], 'k', linewidth=3.5, label='Reproduction')
-
-#     ax.axis('auto')
-#     ax.set_xlabel(r'$\xi_1(m)$')
-#     ax.set_ylabel(r'$\xi_2(m)$')
-#     ax.set_zlabel(r'$\xi_3(m)$')
-#     ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
-#     ax.yaxis.set_major_locator(MaxNLocator(nbins=5))
-#     ax.zaxis.set_major_locator(MaxNLocator(nbins=5))
-#     # ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-#     # ax.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-#     # ax.zaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-#     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-#     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-#     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
