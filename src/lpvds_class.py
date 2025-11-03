@@ -46,10 +46,24 @@ class lpvds_class():
     def _cluster(self):
         self.gamma = self.damm.fit()
 
-        # self.assignment_arr = np.argmax(self.gamma, axis=0) # this would result in some component being empty
+        assignment_arr = np.argmax(self.gamma, axis=0) # this might result in some component being empty
+        unique_elements, counts = np.unique(assignment_arr, return_counts=True)
+        for element, count in zip(unique_elements, counts):
+            print("Current element", element)
+            print("has number", count)
+            if count == 0:
+                input("Elastic update gamma gives zero count")
+
         # self.K     = self.gamma.shape[0] 
 
         self.assignment_arr = self.damm.z
+        # unique_elements, counts = np.unique(self.assignment_arr, return_counts=True)
+        # for element, count in zip(unique_elements, counts):
+        #     print("Current element", element)
+        #     print("has number", count)
+        #     if count == 0:
+        #         input("Elastic update gamma gives zero count")
+
         self.K = int(self.damm.K)
 
     def _optimize(self):
@@ -63,15 +77,19 @@ class lpvds_class():
         # self._logOut()
 
 
-    def elasticUpdate(self, new_traj, new_gmm_struct, att_new):
-        x_new, x_dot_new, assignment_arr_new, gamma_new = self.damm.elasticUpdate(new_traj, new_gmm_struct)
-        self.x_att = att_new
-        self.x_0 = x_new[0, :]
-        self.K     = gamma_new.shape[0]
-        self.ds_opt = dsopt_class(x_new, x_dot_new, att_new, gamma_new, assignment_arr_new)
+    def elasticUpdate(self, new_x, new_x_dot, new_gmm_struct, new_att):
+        new_gmm_struct, new_assignment_arr, new_gamma = self.damm.elasticUpdate(new_x, new_x_dot, new_gmm_struct)
+        self.x_att = new_att
+        self.x_0 = new_x[0, :]
+        self.K     = new_gamma.shape[0]
+        self.ds_opt = dsopt_class(new_x, new_x_dot, new_att, new_gamma, new_assignment_arr)
         self.A = self.ds_opt.begin()
 
+        self.assignment_arr = new_assignment_arr
+
         # self._logOut()
+
+        return new_x, new_x_dot, new_gmm_struct
 
 
     def _step(self, x, dt):
@@ -139,32 +157,31 @@ class lpvds_class():
             return json_output
 
 
-
-    def begin_next(self, x_new, x_dot_new, x_att_new):
+    """ Legacy code for incremental learning """
+    # def begin_next(self, x_new, x_dot_new, x_att_new):
+    #     # shift new data
+    #     shift = self.x_att - x_att_new
+    #     x_new_shift = x_new + np.tile(shift, (x_new.shape[0], 1))
         
-        # shift new data
-        shift = self.x_att - x_att_new
-        x_new_shift = x_new + np.tile(shift, (x_new.shape[0], 1))
+    #     # combine batches
+    #     self.x = np.vstack((self.x, x_new_shift))
+    #     self.x_dot = np.vstack((self.x_dot, x_dot_new))
+
+    #     # construct assignment arr
+    #     comb_assignment_arr = np.concatenate((self.assignment_arr, -1 * np.ones((x_new.shape[0]), dtype=np.int32)))
         
-        # combine batches
-        self.x = np.vstack((self.x, x_new_shift))
-        self.x_dot = np.vstack((self.x_dot, x_dot_new))
+    #     # run damm
+    #     self.damm  = damm_class(self.x, self.x_dot, self.param)
+    #     self.gamma = self.damm.begin(comb_assignment_arr)
+    #     self.assignment_arr = np.argmax(self.gamma, axis=0)
+    #     self.K     = self.gamma.shape[0]
 
-        # construct assignment arr
-        comb_assignment_arr = np.concatenate((self.assignment_arr, -1 * np.ones((x_new.shape[0]), dtype=np.int32)))
-        
-        # run damm
-        self.damm  = damm_class(self.x, self.x_dot, self.param)
-        self.gamma = self.damm.begin(comb_assignment_arr)
-        self.assignment_arr = np.argmax(self.gamma, axis=0)
-        self.K     = self.gamma.shape[0]
+    #     # re-learn A
+    #     self._optimize()
+    #     self._logOut()
 
-        # re-learn A
-        self._optimize()
-        self._logOut()
-
-        # store
-        self.x_new_shift = x_new_shift
+    #     # store
+    #     self.x_new_shift = x_new_shift
 
 
     def evaluate(self):
