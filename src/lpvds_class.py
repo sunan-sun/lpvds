@@ -45,6 +45,7 @@ class lpvds_class():
 
     def _cluster(self):
         self.gamma = self.damm.fit()
+        # self.gamma = self.damm.fit_scikit()
 
         assignment_arr = np.argmax(self.gamma, axis=0) # this might result in some component being empty
         unique_elements, counts = np.unique(assignment_arr, return_counts=True)
