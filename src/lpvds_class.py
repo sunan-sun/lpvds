@@ -96,7 +96,11 @@ class lpvds_class():
     def _step(self, x, dt):
         x_dot     = np.zeros((x.shape[1], 1))
 
-        gamma = self.damm.compute_gamma(x) 
+        if self.damm is None:
+            gamma = np.ones((self.K, 1))
+        else:
+            gamma = self.damm.compute_gamma(x)
+
         for k in range(self.K):
             x_dot  += gamma[k, 0] * self.A[k] @ (x - self.x_att).T
         x_next = x + x_dot.T * dt
@@ -122,6 +126,7 @@ class lpvds_class():
 
             i += 1
 
+        print("Converged within max iteration")
         return np.vstack(x_test), np.array(gamma_test)
 
 
@@ -211,3 +216,24 @@ class lpvds_class():
             x_dot_pred  += gamma[k, :].reshape(1, -1) * (self.A[k] @ (x - self.x_att).T)
 
         return x_dot_pred
+    
+
+
+    @classmethod
+    def single_ds(cls, x_att: np.ndarray):
+        """
+        Returns an instance of lpvds_class initialized as a 
+        global linear stable system pointing towards x_att.
+        """
+        # Create instance without calling __init__ to avoid DAMM clustering
+        instance = cls.__new__(cls)
+        
+        instance.damm = None 
+        instance.x_att = x_att.reshape(1, -1)
+        instance.dim = instance.x_att.shape[1]
+        instance.K = 1
+        instance.tol = 10E-3
+        instance.max_iter = 10000
+        instance.A = np.tile(-1.0 * np.eye(instance.dim), (instance.K, 1, 1))
+        
+        return instance
