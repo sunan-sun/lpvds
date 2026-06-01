@@ -6,8 +6,8 @@ import random
 
 
 plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "Times New Roman",
+    "text.usetex": False,
+    "font.family": "serif",
     "font.size": 30
 })
 
@@ -93,7 +93,7 @@ def plot_gamma(gamma_arr, **argv):
     if K == 1:
         fig, ax = plt.subplots(1, 1, figsize=(12, 8))
 
-        ax.scatter(np.arange(M), gamma_arr[0, :], s=5, color=colors[0])
+        ax.scatter(np.arange(M), gamma_arr[:, 0], s=5, color=colors[0])
         ax.set_ylim([0, 1])
         if "title" in argv:
             ax.set_title(argv["title"])
